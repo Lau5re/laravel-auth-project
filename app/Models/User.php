@@ -21,11 +21,32 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
     ];
 
+    /**
+     * Retourne le nom complet (prénom + nom)
+     *
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        // On concatène prénom et nom avec un espace
+        // Si l'un des deux est vide, on évite les doubles espaces
+        return trim("{$this->first_name} {$this->last_name}");
+    }
+
+    /**
+    * Les attributs qui seront automatiquement ajoutés quand le modèle est converti en tableau/JSON
+     *
+     * @var array
+     */
+    protected $appends = ['full_name'];
+
+    
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -41,6 +62,11 @@ class User extends Authenticatable
             return $this->hasMany(EmailOtp::class);
         }
 
+    
+    public function passwordResetOtps()
+    {
+        return $this->hasMany(PasswordResetOtp::class);
+    }
     /**
      * Get the attributes that should be cast.
      *
